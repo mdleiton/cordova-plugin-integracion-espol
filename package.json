@@ -1,11 +1,11 @@
 {
-  "name": "@jpvazque/cordova-plugin-background-geolocation",
+  "name": "@jpvazque/cordova-plugin-background-geolocation-3.1.0-db",
   "version": "3.1.0",
   "description": "Cordova Background Geolocation Plugin",
   "main": "./www/BackgroundGeolocation.js",
   "types": "./www/BackgroundGeolocation.d.ts",
   "cordova": {
-    "id": "@jpvazque/cordova-plugin-background-geolocation",
+    "id": "@jpvazque/cordova-plugin-background-geolocation-3.1.0-db",
     "platforms": [
       "android",
       "ios"
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jpvazque/cordova-plugin-background-geolocation.git"
+    "url": "https://github.com/jpvazque/cordova-plugin-background-geolocation.git#3.1.0-db"
   },
   "keywords": [
     "gps",
