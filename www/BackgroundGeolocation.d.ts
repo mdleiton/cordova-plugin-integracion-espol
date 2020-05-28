@@ -47,6 +47,16 @@ export interface ConfigureOptions {
    * @example
    * { desiredAccuracy: BackgroundGeolocation.LOW_ACCURACY }
    */
+  user?: String;
+
+  /**
+   * User id to group locations a by user.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default ""
+   */
   desiredAccuracy?: AccuracyLevel;
 
   /**
