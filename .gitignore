@@ -13,3 +13,7 @@ local.properties
 *.iml
 build
 *.skip
+
+**/.classpath
+**/.project
+**/.settings

@@ -21,6 +21,18 @@ public class ConfigMapper {
     public static Config fromJSONObject (JSONObject jObject) throws JSONException {
         Config config = new Config();
 
+        if (jObject.has("user")) {
+            config.setUser(jObject.getString("user"));
+        }
+        if (jObject.has("homeLatitude")) {
+            config.setHomeLatitude(jObject.getDouble("homeLatitude"));
+        }
+        if (jObject.has("homeLongitude")) {
+            config.setHomeLongitude(jObject.getDouble("homeLongitude"));
+        }
+        if (jObject.has("homeRadius")) {
+            config.setHomeRadius(jObject.getDouble("homeRadius"));
+        }
         if (jObject.has("stationaryRadius")) {
             config.setStationaryRadius(jObject.getDouble("stationaryRadius"));
         }
@@ -104,6 +116,10 @@ public class ConfigMapper {
 
     public static JSONObject toJSONObject(Config config) throws JSONException {
         JSONObject json = new JSONObject();
+        json.put("user", config.getUser());
+        json.put("homeLatitude", config.getHomeLatitude());
+        json.put("homeLongitude", config.getHomeLongitude());
+        json.put("homeRadius", config.getHomeRadius());
         json.put("stationaryRadius", config.getStationaryRadius());
         json.put("distanceFilter", config.getDistanceFilter());
         json.put("desiredAccuracy", config.getDesiredAccuracy());
