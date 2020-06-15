@@ -32,6 +32,46 @@ export interface ConfigureOptions {
   locationProvider?: LocationProvider;
 
   /**
+   * User id to group locations a by user.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default ""
+   */
+  user?: string;
+
+  /**
+   * Home latitude to detect when the user is at home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default ""
+   */
+  homeLatitude?: number;
+
+  /**
+   * Home longitude to detect when the user is at home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default ""
+   */
+  homeLongitude?: number;
+
+  /**
+   * Home radius to detect when the user is at home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default ""
+   */
+  homeRadius?: number;
+
+  /**
    * Desired accuracy in meters.
    *
    * Platform: all
