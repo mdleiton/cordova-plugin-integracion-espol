@@ -26,6 +26,7 @@ import com.marianhello.bgloc.data.BackgroundActivity;
 import com.marianhello.bgloc.data.BackgroundLocation;
 import com.marianhello.logging.LogEntry;
 import com.marianhello.logging.LoggerManager;
+import com.marianhello.bgloc.data.Score;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -70,6 +71,7 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
     public static final String ACTION_END_TASK = "endTask";
     public static final String ACTION_REGISTER_HEADLESS_TASK = "registerHeadlessTask";
     public static final String ACTION_FORCE_SYNC = "forceSync";
+    public static final String ACTION_GET_SCORES = "getScores";
 
     private BackgroundGeolocationFacade facade;
 
@@ -488,6 +490,15 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             jsonLocationsArray.put(location.toJSONObjectWithId());
         }
         return jsonLocationsArray;
+    }
+
+    private JSONArray getScores() throws JSONException {
+        JSONArray jsonScoresArray = new JSONArray();
+        Collection<Score> scores = facade.getScores();
+        for (Score score : scores) {
+            jsonScoresArray.put(score.toJSONObject());
+        }
+        return jsonScoresArray;
     }
 
     private JSONArray getValidLocations() throws JSONException {

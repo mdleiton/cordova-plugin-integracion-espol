@@ -268,6 +268,13 @@ var BackgroundGeolocation = {
       return void 0;
     }
     unsubscribeAll([event]);
+  },
+
+  getScores: function (success, failure) {
+    exec(success || emptyFnc,
+        failure || emptyFnc,
+        'BackgroundGeolocation',
+        'getScores');
   }
 };
 
