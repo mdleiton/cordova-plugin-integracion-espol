@@ -71,6 +71,27 @@ export interface ConfigureOptions {
    */
   homeRadius?: number;
 
+
+  /**
+   * Amount of networks near home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default 0
+   */
+  homeNetworks?: number;
+
+  /**
+   * Cesus area to detect when the user is near home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default 20000
+   */
+  censusArea?: number;
+
   /**
    * Desired accuracy in meters.
    *
