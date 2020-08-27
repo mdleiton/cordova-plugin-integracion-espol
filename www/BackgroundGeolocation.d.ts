@@ -71,6 +71,27 @@ export interface ConfigureOptions {
    */
   homeRadius?: number;
 
+
+  /**
+   * Amount of networks near home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default 0
+   */
+  homeNetworks?: number;
+
+  /**
+   * Cesus area to detect when the user is near home.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default 20000
+   */
+  censusArea?: number;
+
   /**
    * Desired accuracy in meters.
    *
@@ -410,6 +431,33 @@ export interface Location {
   mockLocationsEnabled?: boolean;
 }
 
+export interface Score {
+   /**
+   * User id to group scores a by user.
+   *
+   * Platform: Android
+   * Provider: all
+   *
+   * @default ""
+   */
+    user: string;
+
+    /** Exposition score value. */
+    value: number;
+
+    /** Max distance to home. */
+    distanceToHome: number;
+
+    /** Max time away from home. */
+    timeAway: number;
+  
+    /** Exposition score hour. */
+    hour: number;
+  
+    /** Exposition score date. */
+    date: string;
+}
+
 export interface StationaryLocation extends Location {
   radius: number
 }
@@ -736,6 +784,18 @@ export interface BackgroundGeolocationPlugin {
    */
   removeAllListeners(event?: Event): void;
 
+  /**
+   * Return all today scores.
+   *
+   * Platform: Android
+   *
+   * @param success
+   * @param fail
+   */
+  getScores(
+    success: (scores: Score[]) => void,
+    fail?: (error: BackgroundGeolocationError) => void
+  ): void;
 
   /**
    * Start background task (iOS only)
