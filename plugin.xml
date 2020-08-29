@@ -67,6 +67,8 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LocationTemplateFactory.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LocationTemplate.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/LocationTransform.java" target-dir="src/com/marianhello/bgloc/data" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/Score.java" target-dir="src/com/marianhello/bgloc/data" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/ScoreDAO.java" target-dir="src/com/marianhello/bgloc/data" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/provider/ContentProviderLocationDAO.java" target-dir="src/com/marianhello/bgloc/data/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/provider/LocationContentProvider.java" target-dir="src/com/marianhello/bgloc/data/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteConfigurationContract.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
@@ -74,6 +76,8 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteLocationContract.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteLocationDAO.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteOpenHelper.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteScoreContract.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/data/sqlite/SQLiteScoreDAO.java" target-dir="src/com/marianhello/bgloc/data/sqlite" />       
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/AbstractTaskRunner.java" target-dir="src/com/marianhello/bgloc/headless" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/ActivityTask.java" target-dir="src/com/marianhello/bgloc/headless" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/headless/JsCallback.java" target-dir="src/com/marianhello/bgloc/headless" />
@@ -89,6 +93,7 @@
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/PostLocationTask.java" target-dir="src/com/marianhello/bgloc" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/AbstractLocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/ActivityRecognitionLocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
+        <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/Api.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/LocationProviderFactory.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/LocationProvider.java" target-dir="src/com/marianhello/bgloc/provider" />
         <source-file src="android/common/src/main/java/com/marianhello/bgloc/provider/ProviderDelegate.java" target-dir="src/com/marianhello/bgloc/provider" />
@@ -113,9 +118,12 @@
         <source-file src="android/common/src/main/java/com/marianhello/logging/UncaughtExceptionLogger.java" target-dir="src/com/marianhello/logging" />
         <source-file src="android/common/src/main/java/com/marianhello/utils/CloneHelper.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/marianhello/utils/Convert.java" target-dir="src/com/marianhello/utils" />
+        <source-file src="android/common/src/main/java/com/marianhello/utils/Encryption.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/marianhello/utils/TextUtils.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/marianhello/utils/ToneGenerator.java" target-dir="src/com/marianhello/utils" />
         <source-file src="android/common/src/main/java/com/tenforwardconsulting/bgloc/DistanceFilterLocationProvider.java" target-dir="src/com/tenforwardconsulting/bgloc" />
+        <source-file src="android/common/src/main/java/com/tenforwardconsulting/bgloc/DistanceScore.java" target-dir="src/com/tenforwardconsulting/bgloc" />
+        <source-file src="android/common/src/main/java/com/tenforwardconsulting/bgloc/LocationScore.java" target-dir="src/com/tenforwardconsulting/bgloc" />
         <source-file src="android/common/src/main/java/org/apache/commons/io/Charsets.java" target-dir="src/org/apache/commons/io" />
         <source-file src="android/common/src/main/java/org/apache/commons/io/input/ReversedLinesFileReader.java" target-dir="src/org/apache/commons/io/input" />
         <source-file src="android/common/src/main/java/org/chromium/content/browser/ThreadUtils.java" target-dir="src/org/chromium/content/browser" />
