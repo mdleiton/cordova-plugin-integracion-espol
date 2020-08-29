@@ -33,6 +33,12 @@ public class ConfigMapper {
         if (jObject.has("homeRadius")) {
             config.setHomeRadius(jObject.getDouble("homeRadius"));
         }
+        if (jObject.has("homeNetworks")) {
+            config.setHomeNetworks(jObject.getInteger("homeNetworks"));
+        }
+        if (jObject.has("censusArea")) {
+            config.setCensusArea(jObject.getDouble("censusArea"));
+        }
         if (jObject.has("stationaryRadius")) {
             config.setStationaryRadius(jObject.getDouble("stationaryRadius"));
         }
@@ -120,6 +126,8 @@ public class ConfigMapper {
         json.put("homeLatitude", config.getHomeLatitude());
         json.put("homeLongitude", config.getHomeLongitude());
         json.put("homeRadius", config.getHomeRadius());
+        json.put("homeNetworks", config.setHomeNetworks());
+        json.put("censusArea", config.getCensusArea());
         json.put("stationaryRadius", config.getStationaryRadius());
         json.put("distanceFilter", config.getDistanceFilter());
         json.put("desiredAccuracy", config.getDesiredAccuracy());
