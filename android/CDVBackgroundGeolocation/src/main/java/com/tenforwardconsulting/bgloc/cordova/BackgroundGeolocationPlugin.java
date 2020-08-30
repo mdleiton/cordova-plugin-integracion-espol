@@ -351,6 +351,17 @@ public class BackgroundGeolocationPlugin extends CordovaPlugin implements Plugin
             logger.debug("Forced location sync requested");
             facade.forceSync();
             return true;
+        } else if (ACTION_GET_SCORES.equals(action)) {
+            runOnWebViewThread(new Runnable() {
+                public void run() {
+                    try {
+                        callbackContext.success(getScores());
+                    } catch (Exception e) {
+                        callbackContext.sendPluginResult(ErrorPluginResult.from("Getting scores failed", e, PluginException.JSON_ERROR));
+                    }
+                }
+            });
+            return true;
         }
 
         return false;
