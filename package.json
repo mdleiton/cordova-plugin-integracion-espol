@@ -1,19 +1,18 @@
 {
-  "name": "@jpvazque/cordova-plugin-background-geolocation",
+  "name": "@piero512/cordova-plugin-integracion-espol",
   "version": "3.2.0",
-  "description": "Cordova Background Geolocation Plugin",
+  "description": "Cordova integracion espol",
   "main": "./www/BackgroundGeolocation.js",
   "types": "./www/BackgroundGeolocation.d.ts",
   "cordova": {
-    "id": "@jpvazque/cordova-plugin-background-geolocation",
+    "id": "@jpvazque/cordova-plugin-integracion-espol",
     "platforms": [
-      "android",
-      "ios"
+      "android"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jpvazque/cordova-plugin-background-geolocation.git"
+    "url": "https://github.com/Piero512/cordova-plugin-background-geolocation.git"
   },
   "keywords": [
     "gps",
@@ -22,7 +21,6 @@
     "background",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-ios",
     "cordova",
     "phonegap"
   ],
@@ -32,16 +30,15 @@
         "cordova": ">=3.0.0"
       },
       "2.3.3": {
-        "cordova-ios": ">=4.4.0",
         "cordova-android": ">=6.3.0",
         "cordova": ">=7.1.0"
       }
     }
   },
-  "author": "",
+  "author": "Multiples",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/jpvazque/cordova-plugin-background-geolocation/issues"
+    "url": "https://github.com/Piero512/cordova-plugin-integracion-espol/issues"
   },
-  "homepage": "https://github.com/jpvazque/cordova-plugin-background-geolocation#readme"
+  "homepage": "https://github.com/Piero512/cordova-plugin-integracion-espol#readme"
 }

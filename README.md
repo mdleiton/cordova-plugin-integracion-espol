@@ -1,16 +1,4 @@
-# @mauron85/cordova-plugin-background-geolocation
-
-## We're moving
-
-Npm package is now [@mauron85/cordova-plugin-background-geolocation](https://www.npmjs.com/package/@mauron85/cordova-plugin-background-geolocation)!
-
-
-## Donation
-
-Please support my work and continued development with your donation.
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KTUXQQD85F666)
-
+# @piero512/cordova-plugin-integracion-espol
 ## Submitting issues
 
 All new issues should follow instructions in [ISSUE_TEMPLATE.md](/ISSUE_TEMPLATE.md).
@@ -33,7 +21,7 @@ Recommend you to read https://developer.android.com/about/versions/oreo/bac
 
 ## Description
 
-Cross-platform geolocation for Cordova / PhoneGap with battery-saving "circular region monitoring" and "stop detection".
+Cross-platform geolocation for Cordova / PhoneGap with battery-saving "circular region monitoring" and "stop detection" with classes bolted on to submit data to network stuff.
 
 This plugin can be used for geolocation when the app is running in the foreground or background. It is more battery and data efficient than html5 geolocation or cordova-geolocation plugin. It can be used side by side with other geolocation providers (eg. html5 navigator.geolocation).
 
@@ -55,7 +43,7 @@ See [MIGRATIONS.md](/MIGRATIONS.md)
 ## Installing the plugin
 
 ```
-cordova plugin add @mauron85/cordova-plugin-background-geolocation
+cordova plugin add https://github.com/Piero512/cordova-plugin-integracion-espol.git
 ```
 
 You may also want to change default iOS permission prompts and set specific google play version and android support library version for compatibility with other plugins.
@@ -63,41 +51,14 @@ You may also want to change default iOS permission prompts and set specific goog
 **Note:** Always consult documentation of other plugins to figure out compatible versions.
 
 ```
-cordova plugin add @mauron85/cordova-plugin-background-geolocation \
+cordova plugin add https://github.com/Piero512/cordova-plugin-integracion-espol.git \
   --variable GOOGLE_PLAY_SERVICES_VERSION=11+ \
   --variable ANDROID_SUPPORT_LIBRARY_VERSION=23+ \
   --variable ALWAYS_USAGE_DESCRIPTION="App requires ..." \
   --variable MOTION_USAGE_DESCRIPTION="App requires motion detection"
 ```
 
-Or in `config.xml`:
-
-```
-<plugin name="cordova-plugin-background-geolocation" spec="@mauron85/cordova-plugin-background-geolocation@~3.1.0">
-  <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
-  <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="26+" />
-  <variable name="ICON" value="@mipmap/icon" />
-  <variable name="SMALL_ICON" value="@mipmap/icon" />
-  <variable name="ALWAYS_USAGE_DESCRIPTION" value="App requires background tracking " />
-  <variable name="MOTION_USAGE_DESCRIPTION" value="App requires motion detection" /> 
-</plugin>
-```
-
 **Note:** To apply changes, you must remove and reinstall plugin.
-
-
-## Registering plugin for Adobe® PhoneGap™ Build
-
-This plugin should work with Adobe® PhoneGap™ Build without any modification.
-To register plugin add following line into your `config.xml`:
-
-```
-<plugin name="@mauron85/cordova-plugin-background-geolocation"/>
-```
-
-**Note:** If you're using *hydration*, you have to download and reinstall your app with every new version of the plugin, as plugins are not updated.
-
-## Compilation
 
 ### Compatibility
 
@@ -625,20 +586,6 @@ BackgroundGeolocation.headlessTask(function(event) {
     return 'Processing event: ' + event.name; // will be logged
 });
 ```
-
-### Example of backend server
-
-[Background-geolocation-server](https://github.com/mauron85/background-geolocation-server) is a backend server written in nodejs
-with CORS - Cross-Origin Resource Sharing support.
-There are instructions how to run it and simulate locations on Android, iOS Simulator and Genymotion.
-
-## Quirks
-
-### iOS
-
-On iOS the plugin will execute your registered `.on('location', callbackFn)` callback function. You may manually POST the received ```Geolocation``` to your server using standard XHR. However for long running tasks, you need
-to wrap your code in `startTask` - `endTask` block.
-
 #### `stationaryRadius` (apply only for DISTANCE_FILTER_PROVIDER)
 
 The plugin uses iOS Significant Changes API, and starts triggering ```callbackFn``` only when a cell-tower switch is detected (i.e. the device exits stationary radius). The function ```switchMode``` is provided to force the plugin to enter "BACKGROUND" stationary or "FOREGROUND" mode.
