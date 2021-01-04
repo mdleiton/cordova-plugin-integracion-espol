@@ -102,18 +102,52 @@ public class HttpPostService {
         return conn;
     }
 
-    public static JSONObject postJSON(String url, String body, Map headers) throws IOException {
-        HttpPostService service = new HttpPostService(url);
-        HttpURLConnection conn = service.getPostConnection(body, headers);
+    private static String buildJSONPostRequest(Uri uri,String body){
+        return "POST " +
+            uri.getPath() +
+            " HTTP/1.1\r\n" +
+            "Host: " +
+            uri.getHost() +
+            "\r\n" +
+            "Connection: close\r\n" +
+            "Content-Type: application/json\r\n" +
+            "Content-Length: " +
+            body.length() +
+            "\r\n\r\n" +
+            body;
+    }
 
-        BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+    private static String parseResponse(String httpData){
+        String[] split = httpData.split("\n\n");
+        String[] body = Arrays.copyOfRange(split, 1, split.length);
+        return TextUtils.join("\n\n", body);
+    }
+
+    public static JSONObject postJSON(String url, String body, Map headers) throws IOException {
+        Uri parsed = Uri.parse(url);
+        Socket s;
+        if(Objects.equals(parsed.getScheme(), "https")){
+            int port = parsed.getPort() == -1 ? 443: parsed.getPort();
+            s = SSLSocketFactory.getDefault().createSocket(parsed.getHost(), port);
+
+        } else if (Objects.equals(parsed.getScheme(), "http")){
+            int port = parsed.getPort() == -1 ? 80: parsed.getPort();
+            s = SocketFactory.getDefault().createSocket(parsed.getHost(), port);
+        } else {
+            throw new UnsupportedOperationException("Your scheme is not supported!");
+        }
+        String postRequest = buildJSONPostRequest(parsed, body);
+        s.getOutputStream().write(postRequest.getBytes(StandardCharsets.UTF_8));
+        BufferedReader br = new BufferedReader(new InputStreamReader((s.getInputStream())));
         StringBuilder sb = new StringBuilder();
         String output;
         while ((output = br.readLine()) != null) {
             sb.append(output);
+            sb.append('\n');
         }
+        String replyBody = parseResponse(sb.toString());
         try{
-            return new JSONObject(sb.toString());
+            return new JSONObject(replyBody);
         }catch(Exception e) {
             e.printStackTrace();
             return null;
