@@ -1,5 +1,6 @@
 package com.marianhello.bgloc;
 
+import android.net.Uri;
 import android.os.Build;
 
 import org.json.JSONArray;
@@ -14,13 +15,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
-import java.io.OutputStreamWriter;
+import java.util.Objects;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
+
+import ru.andremoniy.utils.TextUtils;
 
 public class HttpPostService {
     public static final int BUFFER_SIZE = 1024;
