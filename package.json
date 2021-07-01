@@ -1,5 +1,5 @@
 {
-  "name": "@piero512/cordova-plugin-integracion-espol",
+  "name": "@mdleiton/cordova-plugin-integracion-espol",
   "version": "3.2.0",
   "description": "Cordova integracion espol",
   "main": "./www/BackgroundGeolocation.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Piero512/cordova-plugin-background-geolocation.git"
+    "url": "https://github.com/mdleiton/cordova-plugin-background-geolocation.git"
   },
   "keywords": [
     "gps",
@@ -38,7 +38,7 @@
   "author": "Multiples",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Piero512/cordova-plugin-integracion-espol/issues"
+    "url": "https://github.com/mdleiton/cordova-plugin-integracion-espol/issues"
   },
-  "homepage": "https://github.com/Piero512/cordova-plugin-integracion-espol#readme"
+  "homepage": "https://github.com/mdleiton/cordova-plugin-integracion-espol#readme"
 }

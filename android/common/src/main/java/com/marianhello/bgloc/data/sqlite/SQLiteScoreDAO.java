@@ -259,7 +259,6 @@ public class SQLiteScoreDAO implements ScoreDAO {
   public void deleteScores() {
     Calendar currentDate = Calendar.getInstance();
     String stringCurrentDate = getNormalizedDateString(currentDate.getTime());
-
     StringBuilder query = new StringBuilder();
     query.append("DELETE FROM ").append(ScoreEntry.TABLE_NAME)
     .append(" WHERE ")
@@ -276,6 +275,59 @@ public class SQLiteScoreDAO implements ScoreDAO {
         e.printStackTrace();
     }
   }
+
+  /**
+   * Delete scores from previous days, except the last one
+   * Query: DELETE FROM SCORE WHERE user = CONFIG.USER AND date <> currentDate AND ID <> (SELECT MAX(ID) FROM SCORE WHERE USER = CONFIG.USER)
+   * @return number of rows deleted
+   */
+  public void deleteOldScores() {
+    try {
+      Calendar currentDate = Calendar.getInstance();
+      currentDate.add(Calendar.DAY_OF_MONTH, -4);
+      String stringCurrentDate = getNormalizedDateString(currentDate.getTime());
+      StringBuilder query = new StringBuilder();
+      query.append("DELETE FROM ").append(ScoreEntry.TABLE_NAME)
+      .append(" WHERE ")
+      .append(ScoreEntry.COLUMN_NAME_USER).append(" = '").append(config.getUser())
+      .append("' AND ").append(ScoreEntry.COLUMN_NAME_DATE).append(" < '").append(stringCurrentDate)
+      .append("' AND ").append(ScoreEntry._ID).append(" <> ").append("(SELECT MAX(")
+      .append(ScoreEntry._ID).append(") FROM ").append(ScoreEntry.TABLE_NAME)
+      .append(" WHERE ").append(ScoreEntry.COLUMN_NAME_USER).append(" = '").append(config.getUser())
+      .append("');");
+      db.execSQL(query.toString());
+    } catch(SQLException e) {
+        e.printStackTrace();
+    }finally{
+      
+    }
+  }
+
+  /**
+     * Delete scores from previous days(except the last one) and peding status is true.
+     * @return number of rows deleted
+     */
+    public void deleteSentScores() {
+      Calendar currentDate = Calendar.getInstance();
+      String stringCurrentDate = getNormalizedDateString(currentDate.getTime());
+
+      StringBuilder query = new StringBuilder();
+      query.append("DELETE FROM ").append(ScoreEntry.TABLE_NAME)
+      .append(" WHERE ")
+      .append(ScoreEntry.COLUMN_NAME_USER).append(" = '").append(config.getUser())
+      .append("' AND ").append(ScoreEntry.COLUMN_NAME_DATE).append(" <> '").append(stringCurrentDate)
+      .append("' AND ").append(ScoreEntry.COLUMN_NAME_PENDING).append(" = ").append(ScoreEntry.PENDING_FALSE)
+      .append(" AND ").append(ScoreEntry._ID).append(" <> ").append("(SELECT MAX(")
+      .append(ScoreEntry._ID).append(") FROM ").append(ScoreEntry.TABLE_NAME)
+      .append(" WHERE ").append(ScoreEntry.COLUMN_NAME_USER).append(" = '").append(config.getUser())
+      .append("');");
+
+      try {
+          db.execSQL(query.toString());
+      } catch(SQLException e) {
+          e.printStackTrace();
+      }
+    }
 
   /**
    * Delete all of a specific date

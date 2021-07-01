@@ -149,9 +149,11 @@
             </service>
             <provider android:name="com.marianhello.bgloc.data.provider.LocationContentProvider" android:authorities="@string/mauron85_bgloc_content_authority" android:exported="false" android:syncable="true"/>
             <service android:enabled="true" android:exported="false" android:name="com.marianhello.bgloc.service.LocationServiceImpl" />
-            <receiver android:name="com.marianhello.bgloc.BootCompletedReceiver" android:enabled="true" android:exported="true">
+            <receiver android:name="com.marianhello.bgloc.BootCompletedReceiver" android:enabled="true" android:exported="true"
+             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
                 <intent-filter>
                     <action android:name="android.intent.action.BOOT_COMPLETED" />
+                    <category android:name="android.intent.category.DEFAULT" />
                 </intent-filter>
             </receiver>
         </config-file>
@@ -167,6 +169,8 @@
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
             <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
             <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
             <uses-permission android:name="android.permission.WAKE_LOCK" />
             <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
             <uses-permission android:name="android.hardware.location" />

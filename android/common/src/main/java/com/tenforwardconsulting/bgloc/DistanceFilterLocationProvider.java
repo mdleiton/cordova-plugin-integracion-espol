@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.lang.Exception;
 
 public class DistanceFilterLocationProvider extends AbstractLocationProvider implements LocationListener {
 
@@ -50,7 +51,7 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     private static final String SINGLE_LOCATION_UPDATE_ACTION   = P_NAME + ".SINGLE_LOCATION_UPDATE_ACTION";
     private static final String STATIONARY_LOCATION_MONITOR_ACTION = P_NAME + ".STATIONARY_LOCATION_MONITOR_ACTION";
 
-    private static final long STATIONARY_TIMEOUT                                = 5 * 1000 * 60;    // 5 minutes.
+    private static final long STATIONARY_TIMEOUT                                = 3 * 1000 * 60;    // 5 minutes.
     private static final long STATIONARY_LOCATION_POLLING_INTERVAL_LAZY         = 3 * 1000 * 60;    // 3 minutes.
     private static final long STATIONARY_LOCATION_POLLING_INTERVAL_AGGRESSIVE   = 1 * 1000 * 60;    // 1 minute.
     private static final int MAX_STATIONARY_ACQUISITION_ATTEMPTS = 5;
@@ -74,7 +75,6 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     private ConnectivityManager connMgr;
 
     private Criteria criteria;
-
     private LocationManager locationManager;
     private AlarmManager alarmManager;
 
@@ -87,8 +87,8 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
     public DistanceFilterLocationProvider(Context context) {
         super(context);
         PROVIDER_ID = Config.DISTANCE_FILTER_PROVIDER;
-        maxFrecuency = 300000;
-        minFrecuency = 900000;
+        maxFrecuency = 180000;
+        minFrecuency = 300000;
     }
 
     @Override
@@ -230,31 +230,24 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
     private void setTimeInterval(Location location){
         Integer newFrecuency;
-        if(mBatteryManager.isCharging()){
-            newFrecuency = getPredictedFrecuency(true,location);
+        if(isInHome(mConfig.getHomeRadius(), location)) {
+            newFrecuency = getPredictedFrecuency(false,location);
         }else{
-            if(isInHome(mConfig.getHomeRadius(), location)) {
-                // if(isNight()){
-                //     setLowerAccuracy();
-                // }
-                newFrecuency = getPredictedFrecuency(false,location);
-            }else{
-                if(hasChangedConnectedNetwork()) {
-                    setHigherAccuracy();
-                    newFrecuency = getPredictedFrecuency(true,location);
-                }else{
-                    if(haveChangedAvailableNetworks()) {
-                        newFrecuency = getPredictedFrecuency(true,location);
-                    }else{
-                        // setLowerAccuracy();
-                        newFrecuency = getPredictedFrecuency(false,location);
-                    }
-                }
-            } 
+            showDebugToast("isNotInHome");
+            newFrecuency = 60000; 
         }
+        showDebugToast("setTimeInterval " + newFrecuency);
         setAvailableNetworks(connMgr.getAllNetworks());
         setConnectedNetwork(connMgr.getActiveNetwork());
         mConfig.setInterval(newFrecuency);
+        if(newFrecuency != mConfig.getInterval()){
+            List<String> matchingProviders = locationManager.getAllProviders();
+            for (String provider: matchingProviders) {
+                showDebugToast("update interval " + newFrecuency);
+                locationManager.requestLocationUpdates(provider,mConfig.getInterval(), scaledDistanceFilter, this);
+            }
+            locationManager.requestLocationUpdates(locationManager.getBestProvider(criteria, true), mConfig.getInterval(), scaledDistanceFilter, this);
+        }
     }
 
     private Integer getPredictedFrecuency(Boolean action,Location location){ //true aumentar frecuancia -1 min false disminuir frecuancia +1 min
@@ -278,14 +271,29 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
                                                             location.getLongitude(),
                                                             mConfig.getHomeLatitude(),
                                                             mConfig.getHomeLongitude());
+        showDebugToast("actualRadius: " + actualRadius);
         if(actualRadius <= homeRadius){
             return true;
         }
         return false;
     }
 
-    private Double calculateDistanceBetweenPoints(Double x1, Double y1, Float x2, Float y2) {       
-        return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+    private double calculateDistanceBetweenPoints(Double x1, Double y1, Float x2, Float y2) {
+        double theta = y1 - y2;
+        double dist = Math.sin(deg2rad(x1)) * Math.sin(deg2rad(x2)) + Math.cos(deg2rad(x1)) * Math.cos(deg2rad(x2)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344 * 1000;
+        return dist;
+        }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
     }
 
     private Boolean isNight() {
@@ -427,13 +435,22 @@ public class DistanceFilterLocationProvider extends AbstractLocationProvider imp
 
     public void onLocationChanged(Location location) {
         logger.debug("Location change: {} isMoving={}", location.toString(), isMoving);
-        setTimeInterval(location);
+        try { 
+            setTimeInterval(location);
+        } catch (Exception e) {
+            showDebugToast( "error:" + e.getMessage());
+        } 
         LocationScore locationScore = new LocationScore(mConfig, mContext, availableNetworks.length);
         Score score = locationScore.calculateAndSaveScore(location);
-
-        Api api = new Api(mConfig, mContext);
-        ArrayList<Score> pendingScores = api.getPendingScores();
-        api.sendPendingScoresToServer(pendingScores);
+        try{
+            Api api = new Api(mConfig, mContext);
+            api.deleteOldScores();
+            ArrayList<Score> pendingScores = api.getPendingScores();
+            showDebugToast("sending: " + pendingScores.size());
+            api.sendPendingScoresToServer(pendingScores);
+        }catch(Exception e){
+            showDebugToast( "error:" + e.getMessage());
+        }
 
         if (!isMoving && !isAcquiringStationaryLocation && stationaryLocation==null) {
             // Perhaps our GPS signal was interupted, re-acquire a stationaryLocation now.

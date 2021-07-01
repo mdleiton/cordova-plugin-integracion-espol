@@ -114,6 +114,8 @@ public class Score implements Parcelable
             locationCopy.put("latitude", location.getLong("latitude"));
             locationCopy.put("longitude", location.getLong("longitude"));
             locationCopy.put("timestamp", location.getLong("timestamp"));
+            locationCopy.put("altitude", location.getLong("altitude"));
+            locationCopy.put("accuracy", location.getLong("accuracy"));
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {
@@ -245,6 +247,8 @@ public class Score implements Parcelable
             jsonLocation.put("latitude", location.getLatitude());
             jsonLocation.put("longitude", location.getLongitude());
             jsonLocation.put("timestamp", location.getTime());
+            jsonLocation.put("altitude", location.getAltitude());
+            jsonLocation.put("accuracy", location.getAccuracy());
             return jsonLocation;
         } catch(JSONException e) {
             e.printStackTrace();

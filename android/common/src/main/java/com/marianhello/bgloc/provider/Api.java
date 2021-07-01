@@ -2,7 +2,7 @@ package com.marianhello.bgloc.provider;
 
 import android.os.AsyncTask;
 import android.content.Context;
-
+import android.util.Log;
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.data.DAOFactory;
 import com.marianhello.bgloc.data.Score;
@@ -12,6 +12,7 @@ import com.marianhello.bgloc.HttpPostService;
 import com.marianhello.logging.LoggerManager;
 
 import org.json.JSONArray;
+import java.util.Random;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,13 +27,17 @@ import java.util.Date;
 import java.util.ListIterator;
 import java.util.TimeZone;
 
+
 public class Api {
     private Context mContext;
     private Config mConfig;
 
     private static final String API_ENDPOINT = "https://ckan.espol.edu.ec";
+    private static final String TRACKING_ENDPOINT = "https://autosalud.espol.edu.ec";
     private static final String CREATE_REGISTRY_URL = API_ENDPOINT + "/api/integracion/table/insert";
     private static final String UPDATE_REGISTRY_URL = API_ENDPOINT + "/api/integracion/table/update";
+    private static final String ADD_TRACKING_DATA_URL = TRACKING_ENDPOINT + "/purevid/tracking/add";
+
 
     public Api(Config mConfig, Context mContext) {
         this.mContext = mContext;
@@ -40,14 +45,48 @@ public class Api {
     }
 
     public void sendPendingScoresToServer(ArrayList<Score> scores) {
-        ScoreDAO scoreDAO = DAOFactory.createScoreDAO(mContext, mConfig);
-
-        for(Score score: scores) {
-            sendPostRequest(score);
-            scoreDAO.setPendingStateFalse(score);
+        try {
+            Thread.sleep((long)(Math.random() * 10000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        if(scores.size() > 0){
+            ScoreDAO scoreDAO = DAOFactory.createScoreDAO(mContext, mConfig);
+            JSONObject response = null;
+            ArrayList<Score> tmpScores = new ArrayList<Score>();
+            for(Score tmpScore : scores){
+                if(tmpScores.size() >= 25){
+                    response = sendScores(tmpScores);
+                    if(response != null){
+                        for(Score score: tmpScores) {
+                            scoreDAO.setPendingStateFalse(score);
+                        }
+                    }else{
+                        break;
+                    }
+                    scoreDAO.deleteSentScores();
+                    tmpScores = new ArrayList<Score>();
+                }else{
+                    if(tmpScore.getPending() == ScoreEntry.PENDING_TRUE){
+                        tmpScores.add(tmpScore);
+                    }
+                }
+            }
+            if(tmpScores.size() > 0){
+                response = sendScores(tmpScores);
+                if(response != null){
+                    for(Score score: tmpScores) {
+                        scoreDAO.setPendingStateFalse(score);
+                    }
+                    scoreDAO.deleteSentScores();
+                }
+            }
+        }
+    }
 
-        scoreDAO.deleteScores();
+    public void deleteOldScores(){
+        ScoreDAO scoreDAO = DAOFactory.createScoreDAO(mContext, mConfig);
+        scoreDAO.deleteOldScores();    
     }
 
     public ArrayList<Score> getPendingScores() {
@@ -57,7 +96,7 @@ public class Api {
         ArrayList<Score> scoresDB = new ArrayList<Score>(scoreDAO.getAllScores());
 
         Calendar prevDate = Calendar.getInstance();
-        
+
         ListIterator<Score> li = scoresDB.listIterator(scoresDB.size());
 
         while(li.hasPrevious()) {
@@ -71,14 +110,15 @@ public class Api {
                 e.printStackTrace();
             }
 
-            long diffDates = prevDate.getTime().getTime() - scoreDate.getTime().getTime(); 
+            long diffDates = prevDate.getTime().getTime() - scoreDate.getTime().getTime();
             long diffHours = diffDates / (60 * 60 * 1000);
             prevDate.setTime(scoreDate.getTime()); // Update prevDate
 
-            if(diffHours == 1 && score.getPending() == ScoreEntry.PENDING_TRUE) {
+            if(diffHours >= 1 && score.getPending() == ScoreEntry.PENDING_TRUE) {
                 pendingScores.add(score);
-                break;
+                //break;
             }
+            /*
             if(diffHours > 1) { //Check if there are missing hours to sent them with the last recorded score
                 Score missingScore = new Score(score);
                 for(int x = 1; x < diffHours; x++) {
@@ -96,6 +136,7 @@ public class Api {
                     missingScore = new Score(missingScore);
                 }
             }
+            */
         }
         return pendingScores;
     }
@@ -105,8 +146,10 @@ public class Api {
         try {
             locationCopy.put("latitude", location.getLong("latitude"));
             locationCopy.put("longitude", location.getLong("longitude"));
+            locationCopy.put("altitude", location.getLong("altitude"));
             long newTimestamp = location.getLong("timestamp") + (1000 * 60 * 60);
             locationCopy.put("timestamp", newTimestamp);
+            locationCopy.put("accuracy", location.getLong("accuracy"));
         } catch(JSONException e) {
             e.printStackTrace();
         } finally {
@@ -114,90 +157,31 @@ public class Api {
         }
     }
 
-    public void sendPostRequest(Score score){        
+    public JSONObject sendScores(ArrayList<Score> scores){
         try {
-            JSONObject data = generateUpdateScoreBody(score);
-            JSONObject response = new CKANConnectionTask().execute(UPDATE_REGISTRY_URL, data.toString()).get();
-            int updated = response.getJSONObject("data").getInt("rows_updated");
-
-            if(updated == 0) {
-                JSONObject insertBody = generateInsertScoreBody(score);
-                new CKANConnectionTask().execute(CREATE_REGISTRY_URL, insertBody.toString());
-            }
-
+            JSONObject data = generateTrackingBody(scores);
+            return new CKANConnectionTask().execute(ADD_TRACKING_DATA_URL, data.toString()).get();
         } catch(Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 
-    public JSONObject generateUpdateScoreBody(Score score) {
+    public JSONObject generateTrackingBody(ArrayList<Score> scores) {
         try {
             JSONObject values = new JSONObject();
-            values.put("score_"+score.getHour(), score.getValue());
-            values.put("gps_point", score.getLocations().toString());
-
-            JSONObject conditionTelf = generateCondition("telefono_id", "==", score.getUser());
-            JSONObject conditionDay = generateCondition("dia", "==", score.getDate());
-
-            JSONArray conditions = generateConditions(conditionTelf, conditionDay);
-            
-            JSONObject data = new JSONObject();
-            data.put("tabla", "integracion_score_diario");
-            data.put("operador", "and");
-            data.put("valores", values);
-            data.put("condiciones", conditions);
-
-            return data;
-        }catch(Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public JSONObject generateCondition(String columna, String comparador, String valor) {
-        try {
-            JSONObject condition = new JSONObject();
-            condition.put("columna", columna);
-            condition.put("comparador", comparador);
-            condition.put("valor", valor);
-
-            return condition;
-        }catch(Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public JSONArray generateConditions(JSONObject... conditions) {
-        try{
-            JSONArray jsonConditions = new JSONArray();
-            for(int x = 0; x < conditions.length; x++) {
-                jsonConditions.put(conditions[x]);
+            JSONArray scoresArray = new JSONArray();
+            for(Score score: scores) {
+                JSONObject scoreJson = new JSONObject();
+                scoreJson.put("score_"+score.getHour(), score.getValue());
+                scoreJson.put("telefono_id", score.getUser());
+                scoreJson.put("dia", score.getDate());
+                scoreJson.put("score_"+score.getHour(), score.getValue());
+                scoreJson.put("gps_point", score.getLocations());
+                scoresArray.put(scoreJson);
             }
-
-            return jsonConditions;
-        }catch(Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public JSONObject generateInsertScoreBody(Score score){
-        try{
-            JSONObject values = new JSONObject();
-            values.put("telefono_id", score.getUser());
-            values.put("dia", score.getDate());
-            values.put("score_"+score.getHour(), score.getValue());
-            values.put("gps_point", score.getLocations().toString());
-
-            JSONArray datos = new JSONArray();
-            datos.put(values);
-
-            JSONObject data = new JSONObject();
-            data.put("tabla", "integracion_score_diario");
-            data.put("datos", datos);
-
-            return data;
+            values.put("scores", scoresArray);
+            return values;
         }catch(Exception e) {
             e.printStackTrace();
             return null;
